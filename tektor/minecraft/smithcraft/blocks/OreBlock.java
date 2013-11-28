@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
@@ -32,9 +33,7 @@ public class OreBlock extends BlockOre {
 					.getExtendedProperties(SkillInformation.IDENTIFIER)).mining;
 			player.addStat(StatList.mineBlockStatArray[this.blockID], 1);
 			player.addExhaustion(0.025F);
-			ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 			Random rand = par1World.rand;
-			float fortune = rand.nextFloat();
 			if(rand.nextInt(100) > mining)
 			{
 				((SkillInformation) player
@@ -44,39 +43,43 @@ public class OreBlock extends BlockOre {
 				return;
 			}
 			
-			float value = fortune * mining;
-			if (fortune > 0.5 && mining > 5)
+			float iron = (mining > 75) ? 75 : mining;
+			float dullCopper = 0.0f;
+			if(mining > 10)dullCopper = (mining > 75) ? 50 : ((mining-10) * 0.769230769f);
+			float sum = iron + dullCopper;
+			float fortune = rand.nextFloat() * sum;
+			ArrayList<ItemStack> items;
+			if (fortune > iron)
 			{
-				items.add(new ItemStack(SmithcraftBase.ore.itemID, 1, 1));
-				for (int i = 0; i < (mining / 15.0f); i++) {
-					if ((rand.nextInt(6)) < 3) {
-						items.add(new ItemStack(SmithcraftBase.ore.itemID, 1, 1));
-					}
-
-				}
-				for (ItemStack is : items) {
-					this.dropBlockAsItem_do(par1World, par3, par4, par5, is);
-				}
-				((SkillInformation) player
-						.getExtendedProperties(SkillInformation.IDENTIFIER))
-						.mined(2);
+				items = fortuneWheel(1, 15f, 6, mining, rand, player);
+				
 			}
 			else {
-				items.add(new ItemStack(SmithcraftBase.ore.itemID, 1, 0));
-				for (int i = 0; i < (mining / 10.0f); i++) {
-					if ((rand.nextInt(6)) < 3) {
-						items.add(new ItemStack(SmithcraftBase.ore.itemID, 1, 0));
-					}
-
-				}
-				for (ItemStack is : items) {
-					this.dropBlockAsItem_do(par1World, par3, par4, par5, is);
-				}
-				((SkillInformation) player
-						.getExtendedProperties(SkillInformation.IDENTIFIER))
-						.mined(1);
+				items = fortuneWheel(0, 10f, 6, mining, rand, player);
 			}
+			
+			for (ItemStack is : items) {
+				this.dropBlockAsItem_do(par1World, par3, par4, par5, is);
+			}	
 		}
+		
+		
     }
+	private ArrayList<ItemStack> fortuneWheel(int meta, float divider, int random, float mining, Random rand, EntityPlayer player)
+	{
+		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+		items.add(new ItemStack(SmithcraftBase.ore.itemID, 1, meta));
+		for (int i = 0; i < (mining / divider); i++) {
+			if ((rand.nextInt(random)) < 3) {
+				items.add(new ItemStack(SmithcraftBase.ore.itemID, 1, meta));
+			}
+
+		}
+		((SkillInformation) player
+				.getExtendedProperties(SkillInformation.IDENTIFIER))
+				.mined(meta+1);
+
+		return items;
+	}
 
 }
