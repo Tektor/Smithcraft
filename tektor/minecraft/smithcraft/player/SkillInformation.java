@@ -46,9 +46,10 @@ public class SkillInformation implements IExtendedEntityProperties {
 	public void mined(int level) {
 		if(mining < maxMining)
 		{
-			mining = mining + 0.1f;
+			float add = 0.1f * (level+1);
+			mining = mining + add;
 			if(mining > maxMining) mining = maxMining;
-			player.addChatMessage("§3 Your Mining Skill has increased! It is now " + mining + " %");
+			player.addChatMessage("§3 Your Mining Skill has increased by " + add + "! It is now " + mining + " %");
 		}
 		
 	}

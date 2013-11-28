@@ -19,7 +19,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid="Smithcraft", name="Smithcraft", version="0.0.1")
+@Mod(modid="Smithcraft", name="Smithcraft", version="0.0.2")
 @NetworkMod(clientSideRequired=true)
 public class SmithcraftBase {
 
